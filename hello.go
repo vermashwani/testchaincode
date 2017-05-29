@@ -609,8 +609,97 @@ func (t *SKH) getQualification(stub shim.ChaincodeStubInterface, args []string) 
     fmt.Println(string(mapB))
 	
 	return mapB, nil
-
 }
+
+//get ExperienceDetails against the EmployeeId 
+func (t *SKH) getExperience(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+
+	if len(args) != 1 {
+		return nil, errors.New("Incorrect number of arguments. Expecting EmployeeId to query")
+	}
+
+	EmployeeId := args[0]
+	//assignerRole := args[1]
+
+	var columns []shim.Column
+
+	rows, err := stub.GetRows("ExperienceDetails", columns)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to retrieve row")
+	}
+	
+	//assignerOrg1, err := stub.GetState(assignerRole)
+	//assignerOrg := string(assignerOrg1)
+	
+	res2E:= []*ExperienceDetails{}	
+	
+	for row := range rows {		
+		newApp:= new(ExperienceDetails)
+		newApp.ExperienceId = row.Columns[0].GetString_()
+		newApp.EmployeeId = row.Columns[1].GetString_()
+		newApp.NameOrganization = row.Columns[2].GetString_()
+		newApp.StartDate = row.Columns[3].GetString_()
+		newApp.EndDate = row.Columns[4].GetString_()
+		newApp.CurrentPosition = row.Columns[5].GetString_()
+		newApp.CreatedBy = row.Columns[6].GetString_()
+		newApp.CreatedDate = row.Columns[7].GetString_()
+		
+		//if newApp.EmployeeId == EmployeeId && newApp.Source == assignerOrg{
+		if newApp.EmployeeId == EmployeeId{
+		res2E=append(res2E,newApp)		
+		}				
+	}
+	
+    mapB, _ := json.Marshal(res2E)
+    fmt.Println(string(mapB))
+	
+	return mapB, nil
+}
+
+//get CertificationDetails against the EmployeeId 
+func (t *SKH) getCertification(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+
+	if len(args) != 1 {
+		return nil, errors.New("Incorrect number of arguments. Expecting EmployeeId to query")
+	}
+
+	EmployeeId := args[0]
+	//assignerRole := args[1]
+
+	var columns []shim.Column
+
+	rows, err := stub.GetRows("CertificationDetails", columns)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to retrieve row")
+	}
+	
+	//assignerOrg1, err := stub.GetState(assignerRole)
+	//assignerOrg := string(assignerOrg1)
+	
+	res2E:= []*CertificationDetails{}	
+	
+	for row := range rows {		
+		newApp:= new(CertificationDetails)
+		newApp.CertificateId = row.Columns[0].GetString_()
+		newApp.EmployeeId = row.Columns[1].GetString_()
+		newApp.NameCertificate = row.Columns[2].GetString_()
+		newApp.CertificationDate = row.Columns[3].GetString_()
+		newApp.CertAuthority = row.Columns[4].GetString_()
+		newApp.CreatedBy = row.Columns[5].GetString_()
+		newApp.CreatedDate = row.Columns[6].GetString_()
+		
+		//if newApp.EmployeeId == EmployeeId && newApp.Source == assignerOrg{
+		if newApp.EmployeeId == EmployeeId{
+		res2E=append(res2E,newApp)		
+		}				
+	}
+	
+    mapB, _ := json.Marshal(res2E)
+    fmt.Println(string(mapB))
+	
+	return mapB, nil
+}
+
 
 //get All transaction against Personid (irrespective of org)
 func (t *SKH) getAllTransaction(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
@@ -786,18 +875,18 @@ func (t *SKH) Invoke(stub shim.ChaincodeStubInterface, function string, args []s
 // query queries the chaincode
 func (t *SKH) Query(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 
-	if function == "getQualification" { 
-		t := SKH{}
-		return t.getQualification(stub, args)
-	}else if function == "getAllTransaction" { 
-		t := SKH{}
-		return t.getAllTransaction(stub, args)
-	} else if function == "getEmployee" { 
+	if function == "getEmployee" {
 		t := SKH{}
 		return t.getEmployee(stub, args)
-	}else if function == "verifyPerson" { 
+	}else if function == "getQualification" { 
 		t := SKH{}
-		return t.verifyPerson(stub, args)
+		return t.getQualification(stub, args)
+	}else if function == "getExperience" { 
+		t := SKH{}
+		return t.getExperience(stub, args)
+	}else if function == "getCertification" { 
+		t := SKH{}
+		return t.getCertification(stub, args)
 	}
 	
 	return nil, nil
