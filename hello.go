@@ -4,22 +4,16 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	//"strconv"
-
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"github.com/hyperledger/fabric/core/crypto/primitives"
 )
-
-
-
  
 // SKH is a high level smart contract that
 type SKH struct {
 
 }
 
-// EmployeeDetails is for storing Person Details
-
+// EmployeeDetails is for storing Employee Details
 type EmployeeDetails struct{	
 	EmployeeId string `json:"employeeId"`
 	Title string `json:"title"`
@@ -36,6 +30,7 @@ type EmployeeDetails struct{
 	CreatedDate string `json:"createdDate"`
 }
 
+// QualificationDetails is for storing Qualification Details
 type QualificationDetails struct{	
 	QualificationId string `json:"qualificationId"`
 	EmployeeId string `json:"employeeId"`
@@ -46,7 +41,7 @@ type QualificationDetails struct{
 	CreatedBy string `json:"createdBy"`
 	CreatedDate string `json:"createdDate"`
 }
-
+// ExperienceDetails is for storing Work Experience Details
 type ExperienceDetails struct{	
 	ExperienceId string `json:"experienceId"`
 	EmployeeId string `json:"employeeId"`
@@ -57,7 +52,7 @@ type ExperienceDetails struct{
 	CreatedBy string `json:"createdBy"`
 	CreatedDate string `json:"createdDate"`
 }
-
+// CertificationDetails is for storing Certification Details
 type CertificationDetails struct{	
 	CertificateId string `json:"certificateId"`
 	EmployeeId string `json:"employeeId"`
@@ -67,26 +62,11 @@ type CertificationDetails struct{
 	CreatedBy string `json:"createdBy"`
 	CreatedDate string `json:"createdDate"`
 }
-// Transaction is for storing transaction Details
-
-type Transaction struct{	
-	TrxId string `json:"trxId"`
-	TimeStamp string `json:"timeStamp"`
-	PersonId string `json:"PersonId"`
-	Source string `json:"source"`
-	Skill string `json:"skill"`
-	Trxntype string `json:"trxntype"`
-	TrxnSubType string `json:"trxnSubType"`
-	Remarks string `json:"remarks"`
-}
 
 // to return the verify result
 type VerifyU struct{	
 	Result string `json:"result"`
 }
-	
-
-
 
 // Init initializes the smart contracts
 func (t *SKH) Init(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
@@ -98,7 +78,7 @@ func (t *SKH) Init(stub shim.ChaincodeStubInterface, function string, args []str
 		return nil, nil
 	}
 
-	// Create application Table
+	// Create EmployeeDetails Table
 	err = stub.CreateTable("EmployeeDetails", []*shim.ColumnDefinition{
 		&shim.ColumnDefinition{Name: "employeeId", Type: shim.ColumnDefinition_STRING, Key: true},
 		&shim.ColumnDefinition{Name: "title", Type: shim.ColumnDefinition_STRING, Key: false},
@@ -182,28 +162,6 @@ func (t *SKH) Init(stub shim.ChaincodeStubInterface, function string, args []str
 		return nil, errors.New("Failed creating CertificationDetails.")
 	}
 
-	// Check if table already exists
-	_, err = stub.GetTable("Transaction")
-	if err == nil {
-		// Table already exists; do not recreate
-		return nil, nil
-	}
-	
-	// Create application Table
-	err = stub.CreateTable("Transaction", []*shim.ColumnDefinition{
-		&shim.ColumnDefinition{Name: "trxId", Type: shim.ColumnDefinition_STRING, Key: true},
-		&shim.ColumnDefinition{Name: "timeStamp", Type: shim.ColumnDefinition_STRING, Key: false},
-		&shim.ColumnDefinition{Name: "PersonId", Type: shim.ColumnDefinition_STRING, Key: false},
-		&shim.ColumnDefinition{Name: "source", Type: shim.ColumnDefinition_STRING, Key: false},
-		&shim.ColumnDefinition{Name: "skill", Type: shim.ColumnDefinition_STRING, Key: false},
-		&shim.ColumnDefinition{Name: "trxntype", Type: shim.ColumnDefinition_STRING, Key: false},
-		&shim.ColumnDefinition{Name: "trxnSubType", Type: shim.ColumnDefinition_STRING, Key: false},
-		&shim.ColumnDefinition{Name: "remarks", Type: shim.ColumnDefinition_STRING, Key: false},
-	})
-	if err != nil {
-		return nil, errors.New("Failed creating ApplicationTable.")
-	}
-
 	// setting up the users role
 	stub.PutState("user_type1_1", []byte("University"))
 	stub.PutState("user_type1_2", []byte("Institute"))
@@ -213,12 +171,10 @@ func (t *SKH) Init(stub shim.ChaincodeStubInterface, function string, args []str
 	return nil, nil
 }
 	
-
-	
-//registerEmployee to register a person
+//registerEmployee to register an Employee
 func (t *SKH) registerEmployee(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 
-if len(args) != 13 {
+		if len(args) != 13 {
 			return nil, fmt.Errorf("Incorrect number of arguments. Expecting 13 . Got: %d.", len(args))
 		}
 		
@@ -266,15 +222,13 @@ if len(args) != 13 {
 		if !ok && err == nil {
 			return nil, errors.New("Row already exists.")
 		}
-			
 		return nil, nil
-
 }
 
 //addQualification - Add Qualification of employee
 func (t *SKH) addQualification(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 
-if len(args) != 8 {
+		if len(args) != 8 {
 			return nil, fmt.Errorf("Incorrect number of arguments. Expecting 8 . Got: %d.", len(args))
 		}
 		qualificationId:=args[0]
@@ -311,7 +265,7 @@ if len(args) != 8 {
 //addExperience - Add Experience of employee
 func (t *SKH) addExperience(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 
-if len(args) != 8 {
+		if len(args) != 8 {
 			return nil, fmt.Errorf("Incorrect number of arguments. Expecting 8 . Got: %d.", len(args))
 		}
 		experienceId:=args[0]
@@ -348,7 +302,7 @@ if len(args) != 8 {
 //addCertification - Add Certification of employee
 func (t *SKH) addCertification(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 
-if len(args) != 8 {
+		if len(args) != 7 {
 			return nil, fmt.Errorf("Incorrect number of arguments. Expecting 7 . Got: %d.", len(args))
 		}
 		certificateId:=args[0]
@@ -380,191 +334,6 @@ if len(args) != 8 {
 		return nil, nil
 }
 
-// add the transaction(irrespective of org)
-func (t *SKH) addTransaction(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
-
-	if len(args) != 8 {
-		return nil, errors.New("Incorrect number of arguments. Expecting 8.")
-	}
-
-	trxId := args[0]
-	timeStamp:=args[1]
-	PersonId := args[2]
-	
-	/*assignerOrg1, err := stub.GetState(args[3])
-	assignerOrg := string(assignerOrg1)
-	
-	source := assignerOrg*/
-	source := args[3]
-	skill := args[4]
-	trxntype := args[5]
-	trxnSubType := args[6]
-	remarks := args[7]
-	
-	/*newPoints, _ := strconv.ParseInt(points, 10, 0)
-	
-	//whether ADD_PENDING, DELETE_PENDING 
-	if trxnSubType == "ADD_PENDING" || trxnSubType == "DELETE_PENDING"{
-		newPoints = 0
-	}
-	
-*/
-	// Get the row pertaining to this Personid
-	var columns []shim.Column
-	col1 := shim.Column{Value: &shim.Column_String_{String_: PersonId}}
-	columns = append(columns, col1)
-
-	row, err := stub.GetRow("EmployeeDetails", columns)
-	if err != nil {
-		return nil, fmt.Errorf("Error: Failed retrieving user with Personid %s. Error %s", PersonId, err.Error())
-	}
-
-	// GetRows returns empty message if key does not exist
-	if len(row.Columns) == 0 {
-		return nil, nil
-	}
-/*
-	newRoyaltyPoint := row.Columns[12].GetString_()
-	
-	if trxntype=="add"{
-		earlierMile:=row.Columns[12].GetString_()
-		earlierRoyalty, _:=strconv.ParseInt(earlierMile, 10, 0)
-		newRoyaltyPoint = strconv.Itoa(int(earlierRoyalty) + int(newPoints))
-	}else if trxntype=="delete"{
-	
-		earlierMile:=row.Columns[12].GetString_()
-		earlierRoyalty, _:=strconv.ParseInt(earlierMile, 10, 0)
-		newRoyaltiPointtoTest := int(earlierRoyalty) - int(newPoints)
-		
-		if newRoyaltiPointtoTest < 0 {
-			return nil, errors.New("can't deduct as the resulting royalty becoming less than zero.")
-		}
-		newRoyaltyPoint = strconv.Itoa(int(earlierRoyalty) - int(newPoints))
-	}else{
-		return nil, fmt.Errorf("Error: Failed retrieving user with ffid %s. Error %s", ffId, err.Error())
-	}
-	
-	
-	//End- Check that the currentStatus to newStatus transition is accurate
-	// Delete the row pertaining to this ffid
-	err = stub.DeleteRow(
-		"EmployeeDetails",
-		columns,
-	)
-	if err != nil {
-		return nil, errors.New("Failed deleting row.")
-	}
-	
-	employeeId := row.Columns[0].GetString_()
-	
-	title := row.Columns[1].GetString_()
-	gender := row.Columns[2].GetString_()
-	firstName := row.Columns[3].GetString_()
-	lastName := row.Columns[4].GetString_()
-	dob := row.Columns[5].GetString_()
-	email := row.Columns[6].GetString_()
-	country := row.Columns[7].GetString_()
-	address := row.Columns[8].GetString_()
-	city := row.Columns[9].GetString_()
-	zip := row.Columns[10].GetString_()
-	createdBy := row.Columns[11].GetString_()
-	createdDate := row.Columns[12].GetString_()
-
-
-		// Insert a row
-		ok, err := stub.InsertRow("EmployeeDetails", shim.Row{
-			Columns: []*shim.Column{
-				&shim.Column{Value: &shim.Column_String_{String_: employeeId}},
-				&shim.Column{Value: &shim.Column_String_{String_: title}},
-				&shim.Column{Value: &shim.Column_String_{String_: gender}},
-				&shim.Column{Value: &shim.Column_String_{String_: firstName}},
-				&shim.Column{Value: &shim.Column_String_{String_: lastName}},
-				&shim.Column{Value: &shim.Column_String_{String_: dob}},
-				&shim.Column{Value: &shim.Column_String_{String_: email}},
-				&shim.Column{Value: &shim.Column_String_{String_: country}},
-				&shim.Column{Value: &shim.Column_String_{String_: address}},
-				&shim.Column{Value: &shim.Column_String_{String_: city}},
-				&shim.Column{Value: &shim.Column_String_{String_: zip}},
-				&shim.Column{Value: &shim.Column_String_{String_: createdBy}},
-				&shim.Column{Value: &shim.Column_String_{String_: createdDate}},
-			}})
-
-		if err != nil {
-			return nil, err 
-		}
-		if !ok && err == nil {
-			return nil, errors.New("Row already exists.")
-		}
-*/
-		
-		//inserting the transaction
-		
-		// Insert a row
-	ok, err := stub.InsertRow("Transaction", shim.Row{
-			Columns: []*shim.Column{
-				&shim.Column{Value: &shim.Column_String_{String_: trxId}},
-				&shim.Column{Value: &shim.Column_String_{String_: timeStamp}},
-				&shim.Column{Value: &shim.Column_String_{String_: PersonId}},
-				&shim.Column{Value: &shim.Column_String_{String_: source}},
-				&shim.Column{Value: &shim.Column_String_{String_: skill}},
-				&shim.Column{Value: &shim.Column_String_{String_: trxntype}},
-				&shim.Column{Value: &shim.Column_String_{String_: trxnSubType}},
-				&shim.Column{Value: &shim.Column_String_{String_: remarks}},
-			}})
-
-		if err != nil {
-			return nil, err 
-		}
-		if !ok && err == nil {
-			return nil, errors.New("Row already exists.")
-		}	
-	return nil, nil
-
-}
-
-/*
-//get the miles against the ffid (irrespective of org)
-func (t *SKH) getMile(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
-
-	if len(args) != 1 {
-		return nil, errors.New("Incorrect number of arguments. Expecting PersonId to query")
-	}
-
-	ffId := args[0]
-	
-
-	// Get the row pertaining to this PesonId
-	var columns []shim.Column
-	col1 := shim.Column{Value: &shim.Column_String_{String_: PersonId}}
-	columns = append(columns, col1)
-
-	row, err := stub.GetRow("EmployeeDetails", columns)
-	if err != nil {
-		jsonResp := "{\"Error\":\"Failed to get the data for the PersonId " + PersonId + "\"}"
-		return nil, errors.New(jsonResp)
-	}
-
-	// GetRows returns empty message if key does not exist
-	if len(row.Columns) == 0 {
-		jsonResp := "{\"Error\":\"Failed to get the data for the PersonId " + PersonId + "\"}"
-		return nil, errors.New(jsonResp)
-	}
-
-	
-	
-	res2E := GetMile{}
-	
-	res2E.TotalPoint = row.Columns[12].GetString_()
-	
-    mapB, _ := json.Marshal(res2E)
-    fmt.Println(string(mapB))
-	
-	return mapB, nil
-
-}
-*/
-
-
 //get QualificationDetails against the EmployeeId 
 func (t *SKH) getQualification(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 
@@ -584,7 +353,6 @@ func (t *SKH) getQualification(stub shim.ChaincodeStubInterface, args []string) 
 	
 	//assignerOrg1, err := stub.GetState(assignerRole)
 	//assignerOrg := string(assignerOrg1)
-	
 		
 	res2E:= []*QualificationDetails{}	
 	
@@ -701,19 +469,19 @@ func (t *SKH) getCertification(stub shim.ChaincodeStubInterface, args []string) 
 }
 
 
-//get All transaction against Personid (irrespective of org)
-func (t *SKH) getAllTransaction(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+//get All employees against records Created
+func (t *SKH) getAllEmployee(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 
 	if len(args) != 1 {
-		return nil, errors.New("Incorrect number of arguments. Expecting PersonId to query")
+		return nil, errors.New("Incorrect number of arguments. Expecting Created By to query")
 	}
 
-	PersonId := args[0]
+	CreatedBy := args[0]
 	//assignerRole := args[1]
 
 	var columns []shim.Column
 
-	rows, err := stub.GetRows("Transaction", columns)
+	rows, err := stub.GetRows("EmployeeDetails", columns)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to retrieve row")
 	}
@@ -722,42 +490,43 @@ func (t *SKH) getAllTransaction(stub shim.ChaincodeStubInterface, args []string)
 	//assignerOrg := string(assignerOrg1)
 	
 		
-	res2E:= []*Transaction{}	
+	res2E:= []*EmployeeDetails{}	
 	
 	for row := range rows {		
-		newApp:= new(Transaction)
-		newApp.TrxId = row.Columns[0].GetString_()
-		newApp.TimeStamp = row.Columns[1].GetString_()
-		newApp.PersonId = row.Columns[2].GetString_()
-		newApp.Source = row.Columns[3].GetString_()
-		newApp.Skill = row.Columns[4].GetString_()
-		newApp.Trxntype = row.Columns[5].GetString_()
-		newApp.TrxnSubType = row.Columns[6].GetString_()
-		newApp.Remarks = row.Columns[7].GetString_()
+		newApp:= new(EmployeeDetails)
+		newApp.EmployeeId = row.Columns[0].GetString_()
+		newApp.Title = row.Columns[1].GetString_()
+		newApp.Gender = row.Columns[2].GetString_()
+		newApp.FirstName = row.Columns[3].GetString_()
+		newApp.LastName = row.Columns[4].GetString_()
+		newApp.Dob = row.Columns[5].GetString_()
+		newApp.Email = row.Columns[6].GetString_()
+		newApp.Country = row.Columns[7].GetString_()
 		
-		if newApp.PersonId == PersonId{
+		newApp.Address = row.Columns[8].GetString_()
+		newApp.City = row.Columns[9].GetString_()
+		newApp.Zip = row.Columns[10].GetString_()
+		newApp.CreatedBy = row.Columns[11].GetString_()
+		newApp.CreatedDate = row.Columns[12].GetString_()
+		
+		if newApp.CreatedBy == CreatedBy{
 		res2E=append(res2E,newApp)		
 		}				
 	}
-	
     mapB, _ := json.Marshal(res2E)
     fmt.Println(string(mapB))
-	
 	return mapB, nil
-
 }
 
 
-// to get the deatils of a user against ffid (for internal testing, irrespective of org)
+// to get the employee deatils of an employee against EmployeeId
 func (t *SKH) getEmployee(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 
 	if len(args) != 1 {
-		return nil, errors.New("Incorrect number of arguments. Expecting EmployeeId to query")
+		return nil, errors.New("Incorrect number of arguments. Expecting Created By to query")
 	}
 
 	EmployeeId := args[0]
-	
-
 	// Get the row pertaining to this EmployeeId
 	var columns []shim.Column
 	col1 := shim.Column{Value: &shim.Column_String_{String_: EmployeeId}}
@@ -765,17 +534,16 @@ func (t *SKH) getEmployee(stub shim.ChaincodeStubInterface, args []string) ([]by
 
 	row, err := stub.GetRow("EmployeeDetails", columns)
 	if err != nil {
-		jsonResp := "{\"Error\":\"Failed to get the data for the application " + EmployeeId + "\"}"
+		jsonResp := "{\"Error\":\"Failed to get the data for Employee " + EmployeeId + "\"}"
 		return nil, errors.New(jsonResp)
 	}
 
 	// GetRows returns empty message if key does not exist
 	if len(row.Columns) == 0 {
-		jsonResp := "{\"Error\":\"Failed to get the data for the application " + EmployeeId + "\"}"
+		jsonResp := "{\"Error\":\"Failed to get the data for Employee " + EmployeeId + "\"}"
 		return nil, errors.New(jsonResp)
 	}
 
-	
 	res2E := EmployeeDetails{}
 	
 	res2E.EmployeeId = row.Columns[0].GetString_()
@@ -798,7 +566,6 @@ func (t *SKH) getEmployee(stub shim.ChaincodeStubInterface, args []string) ([]by
 	return mapB, nil
 
 }
-
 
 // verify the user is present or not (for internal testing, irrespective of org)
 func (t *SKH) verifyPerson(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
@@ -845,8 +612,6 @@ func (t *SKH) verifyPerson(stub shim.ChaincodeStubInterface, args []string) ([]b
 
 }
 
-
-
 // Invoke invokes the chaincode
 func (t *SKH) Invoke(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 
@@ -863,19 +628,16 @@ func (t *SKH) Invoke(stub shim.ChaincodeStubInterface, function string, args []s
 		t := SKH{}
 		return t.addCertification(stub, args)
 	}
-	/*else if function == "addTransaction" { 
-		t := SKH{}
-		return t.addTransaction(stub, args)
-	}*/
-
 	return nil, errors.New("Invalid invoke function name.")
-
 }
 
 // query queries the chaincode
 func (t *SKH) Query(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 
-	if function == "getEmployee" {
+	if function == "getAllEmployee" {
+		t := SKH{}
+		return t.getAllEmployee(stub, args)
+	}else if function == "getEmployee" {
 		t := SKH{}
 		return t.getEmployee(stub, args)
 	}else if function == "getQualification" { 
@@ -888,7 +650,6 @@ func (t *SKH) Query(stub shim.ChaincodeStubInterface, function string, args []st
 		t := SKH{}
 		return t.getCertification(stub, args)
 	}
-	
 	return nil, nil
 }
 
@@ -898,4 +659,4 @@ func main() {
 	if err != nil {
 		fmt.Printf("Error starting SKH: %s", err)
 	}
-} 
+}
